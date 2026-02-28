@@ -11,9 +11,11 @@
  *                     // nosec: intentional
  *                   → all findings in that file are downgraded to INFO
  *
- *  3. Path-based:   files whose path contains well-known test-data directories
- *                   (fixtures/, __fixtures__/, mocks/, testdata/, stubs/, fakes/)
- *                   or whose name matches *.fixture.ts / *.mock.ts etc.
+ *  3. Path-based:   files whose path contains well-known test directories
+ *                   (fixtures/, __fixtures__/, mocks/, testdata/, stubs/, fakes/,
+ *                   __tests__/, tests/, test/)
+ *                   or whose name matches *.test.ts / *.spec.ts / *.fixture.ts /
+ *                   *.mock.ts etc.
  *                   → all findings downgraded to INFO
  *
  * INFO findings do NOT contribute to the security score but are still visible
@@ -39,7 +41,10 @@ const TEST_DIRS_RE =
   /(?:^|\/)(?:fixtures?|__fixtures__|testdata|test[-_]data|mocks?|stubs?|fakes?|test[-_]helpers?|spec[-_]helpers?)\//i
 
 /** File-name suffixes that indicate intentional test / mock data */
-const TEST_FILE_RE = /\.(?:fixture|mock|stub|fake|testdata|test[-_]data)\.[a-z]+$/i
+const TEST_FILE_RE = /\.(?:test|spec|fixture|mock|stub|fake|testdata|test[-_]data)\.[a-z]+$/i
+
+/** Directories whose contents are treated as test code */
+const TEST_DIR_NAMES_RE = /(?:^|\/)__?tests?__?\//i
 
 /** Pragma patterns accepted in the first 5 lines of a file */
 const PRAGMA_RE =
@@ -58,7 +63,10 @@ export function isTestFixtureFile(relPath: string, content: string): boolean {
   // Path-based: known test-data directories
   if (TEST_DIRS_RE.test('/' + normalized)) return true
 
-  // File-name suffix
+  // Path-based: __tests__/, tests/, test/ directories
+  if (TEST_DIR_NAMES_RE.test('/' + normalized)) return true
+
+  // File-name suffix: *.test.ts, *.spec.ts, *.fixture.ts, *.mock.ts, etc.
   if (TEST_FILE_RE.test(normalized)) return true
 
   // File-level pragma in the first 5 lines
