@@ -96,16 +96,19 @@ export function printScanResult(result: ScanResult): void {
     f.severity,
     f.title,
     f.file ? `${f.file}${f.line ? ':' + f.line : ''}` : '—',
-    f.remediation ? f.remediation.slice(0, 40) : '—',
   ]);
 
-  // Dynamic width: severity fixed, title 38, location 28, remediation 40
-  const widths = [8, 38, 28, 40];
+  // Use terminal width to give as much space as possible to Location
+  const termW = process.stdout.columns || 120;
+  const overhead = 2 + 8 + 3 + 3 + 2;
+  const availW = Math.max(termW - overhead - 2, 60);
+  const locationW = Math.min(Math.floor(availW * 0.40), 55);
+  const findingW  = availW - locationW;
+  const widths = [8, findingW, locationW];
+
   console.log('  ' + table(
-    ['Severity', 'Finding', 'Location', 'Remediation'],
-    rows.map(r => [
-      r[0], r[1], r[2], r[3]
-    ]),
+    ['Severity', 'Finding', 'Location'],
+    rows,
     widths
   ).split('\n').join('\n  '));
 

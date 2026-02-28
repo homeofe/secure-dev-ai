@@ -162,6 +162,10 @@ export async function scanPatterns(projectPath: string): Promise<Finding[]> {
         if (/\.test\.|\.spec\./.test(filePath) && rule.severity === 'LOW') continue;
         // Skip if line is a comment
         if (/^\s*(#|\/\/|\/\*|\*)/.test(lineContent) && rule.name !== 'TODO/FIXME security note') continue;
+        // Skip if match is inside a regex literal (e.g. pattern: /eval\(/)
+        if (match.index > 0 && content[match.index - 1] === '/') continue;
+        // Skip rule definition property lines (name/remediation strings in scanner source)
+        if (/^\s*(?:name|remediation|description)\s*:\s*['"`]/.test(lineContent)) continue;
 
         findings.push({
           module: 'patterns',

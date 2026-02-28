@@ -88,6 +88,11 @@ export async function scanSecrets(projectPath: string): Promise<Finding[]> {
         // Skip comments
         if (/^\s*(#|\/\/|\/\*)/.test(lineContent)) continue;
 
+        // Skip if the match sits inside a regex literal (e.g. pattern: /BEGIN RSA KEY-----/g)
+        if (match.index > 0 && content[match.index - 1] === '/') continue;
+        // Skip lines that define a detection pattern or rule property (scanner source files)
+        if (/\bpattern\s*:\s*\//.test(lineContent)) continue;
+
         // Skip if line contains common placeholder indicators
         const PLACEHOLDER_LINE = /example|placeholder|your[-_]?(?:key|secret|token|api|password)|changeme|todo|insert|replace|fill.?in|enter.?(?:key|secret|token)|sample|fake|dummy|mock|redacted|omit|<[^>]+>/i;
         if (PLACEHOLDER_LINE.test(lineContent)) continue;
