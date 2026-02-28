@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Finding } from '../types.js';
+import { loadIgnoreRules } from '../ignoreRules.js';
 
 interface PatternRule {
   name: string;
@@ -106,7 +107,7 @@ const PATTERN_RULES: PatternRule[] = [
 
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', 'coverage', '__pycache__', '.venv']);
 
-function collectFiles(dir: string, extensions: string[]): string[] {
+function collectFiles(dir: string, extensions: string[], projectRoot: string, isIgnored: (rel: string) => boolean): string[] {
   const results: string[] = [];
   let entries: fs.Dirent[];
   try {
@@ -118,8 +119,10 @@ function collectFiles(dir: string, extensions: string[]): string[] {
   for (const entry of entries) {
     if (SKIP_DIRS.has(entry.name)) continue;
     const fullPath = path.join(dir, entry.name);
+    const relPath = path.relative(projectRoot, fullPath);
+    if (isIgnored(relPath)) continue;
     if (entry.isDirectory()) {
-      results.push(...collectFiles(fullPath, extensions));
+      results.push(...collectFiles(fullPath, extensions, projectRoot, isIgnored));
     } else if (entry.isFile() && extSet.has(path.extname(entry.name).toLowerCase())) {
       results.push(fullPath);
     }
@@ -129,10 +132,11 @@ function collectFiles(dir: string, extensions: string[]): string[] {
 
 export async function scanPatterns(projectPath: string): Promise<Finding[]> {
   const findings: Finding[] = [];
+  const isIgnored = loadIgnoreRules(projectPath);
 
   // Collect all unique extensions needed
   const allExtensions = [...new Set(PATTERN_RULES.flatMap(r => r.extensions))];
-  const files = collectFiles(projectPath, allExtensions);
+  const files = collectFiles(projectPath, allExtensions, projectPath, isIgnored);
 
   for (const filePath of files) {
     let content: string;

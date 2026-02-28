@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Finding } from '../types.js';
+import { loadIgnoreRules } from '../ignoreRules.js';
 
 // 25+ patterns for secrets and credentials
 const SECRET_PATTERNS: Array<{ name: string; pattern: RegExp; severity: Finding['severity'] }> = [
@@ -35,7 +36,7 @@ const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', '.ai', 'coverage', '_
 const SCAN_EXTENSIONS = new Set(['.ts', '.js', '.py', '.go', '.env', '.json', '.yaml', '.yml', '.sh', '.bash', '.conf', '.config', '.ini', '.toml', '.php', '.rb', '.java', '.cs', '.cpp', '.c', '.h']);
 const SKIP_FILES = new Set(['.aiignore', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml']);
 
-function collectFiles(dir: string): string[] {
+function collectFiles(dir: string, projectRoot: string, isIgnored: (rel: string) => boolean): string[] {
   const results: string[] = [];
   let entries: fs.Dirent[];
   try {
@@ -46,8 +47,10 @@ function collectFiles(dir: string): string[] {
   for (const entry of entries) {
     if (SKIP_DIRS.has(entry.name)) continue;
     const fullPath = path.join(dir, entry.name);
+    const relPath = path.relative(projectRoot, fullPath);
+    if (isIgnored(relPath)) continue;
     if (entry.isDirectory()) {
-      results.push(...collectFiles(fullPath));
+      results.push(...collectFiles(fullPath, projectRoot, isIgnored));
     } else if (entry.isFile()) {
       const ext = path.extname(entry.name).toLowerCase();
       if (SCAN_EXTENSIONS.has(ext) || entry.name.startsWith('.env')) {
@@ -60,7 +63,8 @@ function collectFiles(dir: string): string[] {
 
 export async function scanSecrets(projectPath: string): Promise<Finding[]> {
   const findings: Finding[] = [];
-  const files = collectFiles(projectPath);
+  const isIgnored = loadIgnoreRules(projectPath);
+  const files = collectFiles(projectPath, projectPath, isIgnored);
 
   for (const filePath of files) {
     let content: string;

@@ -1,13 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import { Finding } from '../types.js';
+import { loadIgnoreRules } from '../ignoreRules.js';
 
 const AUTH_INDICATORS = /auth|guard|protect|middleware|jwt|session|verify|require|authenticated|isAuth|checkAuth|passport|bearer|token/i;
 
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', 'coverage', 'test', 'tests', '__tests__', 'spec']);
 const SCAN_EXTENSIONS = ['.ts', '.js'];
 
-function collectFiles(dir: string): string[] {
+function collectFiles(dir: string, projectRoot: string, isIgnored: (rel: string) => boolean): string[] {
   const results: string[] = [];
   let entries: fs.Dirent[];
   try {
@@ -19,8 +20,10 @@ function collectFiles(dir: string): string[] {
     if (SKIP_DIRS.has(entry.name)) continue;
     if (entry.name.endsWith('.test.ts') || entry.name.endsWith('.spec.ts')) continue;
     const fullPath = path.join(dir, entry.name);
+    const relPath = path.relative(projectRoot, fullPath);
+    if (isIgnored(relPath)) continue;
     if (entry.isDirectory()) {
-      results.push(...collectFiles(fullPath));
+      results.push(...collectFiles(fullPath, projectRoot, isIgnored));
     } else if (entry.isFile() && SCAN_EXTENSIONS.includes(path.extname(entry.name))) {
       results.push(fullPath);
     }
@@ -30,7 +33,8 @@ function collectFiles(dir: string): string[] {
 
 export async function scanAuth(projectPath: string): Promise<Finding[]> {
   const findings: Finding[] = [];
-  const files = collectFiles(projectPath);
+  const isIgnored = loadIgnoreRules(projectPath);
+  const files = collectFiles(projectPath, projectPath, isIgnored);
 
   // Check if project has any auth setup at all
   let hasAnyAuth = false;
