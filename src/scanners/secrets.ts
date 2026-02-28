@@ -33,7 +33,7 @@ const SECRET_PATTERNS: Array<{ name: string; pattern: RegExp; severity: Finding[
   { name: 'NPM Auth Token', pattern: /\/\/registry\.npmjs\.org\/:_authToken=[^\s]+/g, severity: 'CRITICAL' },
 ];
 
-const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', '.ai', 'coverage', '__pycache__', '.venv', 'vendor']);
+const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', '.ai', 'coverage', '__pycache__', '.venv', 'vendor', 'test', 'tests', '__tests__', '__test__', 'spec', 'specs']);
 const SCAN_EXTENSIONS = new Set(['.ts', '.js', '.py', '.go', '.env', '.json', '.yaml', '.yml', '.sh', '.bash', '.conf', '.config', '.ini', '.toml', '.php', '.rb', '.java', '.cs', '.cpp', '.c', '.h']);
 const SKIP_FILES = new Set(['.aiignore', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml']);
 

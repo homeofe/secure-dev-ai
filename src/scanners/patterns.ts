@@ -106,7 +106,7 @@ const PATTERN_RULES: PatternRule[] = [
   },
 ];
 
-const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', 'coverage', '__pycache__', '.venv']);
+const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', 'coverage', '__pycache__', '.venv', 'test', 'tests', '__tests__', '__test__', 'spec', 'specs']);
 
 function collectFiles(dir: string, extensions: string[], projectRoot: string, isIgnored: (rel: string) => boolean): string[] {
   const results: string[] = [];
