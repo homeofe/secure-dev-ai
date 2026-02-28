@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Finding } from '../types.js';
 import { loadIgnoreRules } from '../ignoreRules.js';
+import { isLineSuppressed, isTestFixtureFile, asTestFixtureFinding } from '../suppressions.js';
 
 interface PatternRule {
   name: string;
@@ -148,6 +149,7 @@ export async function scanPatterns(projectPath: string): Promise<Finding[]> {
     const ext = path.extname(filePath).toLowerCase();
     const relPath = path.relative(projectPath, filePath);
     const lines = content.split('\n');
+    const isFixture = isTestFixtureFile(relPath, content);
 
     for (const rule of PATTERN_RULES) {
       if (!rule.extensions.includes(ext)) continue;
@@ -166,8 +168,10 @@ export async function scanPatterns(projectPath: string): Promise<Finding[]> {
         if (match.index > 0 && content[match.index - 1] === '/') continue;
         // Skip rule definition property lines (name/remediation strings in scanner source)
         if (/^\s*(?:name|remediation|description)\s*:\s*['"`]/.test(lineContent)) continue;
+        // Line-level suppression: // nosec
+        if (isLineSuppressed(lineContent)) continue;
 
-        findings.push({
+        let finding: Finding = {
           module: 'patterns',
           severity: rule.severity,
           title: rule.name,
@@ -175,7 +179,10 @@ export async function scanPatterns(projectPath: string): Promise<Finding[]> {
           file: relPath,
           line: lineNumber,
           remediation: rule.remediation,
-        });
+        };
+        if (isFixture) finding = asTestFixtureFinding(finding);
+
+        findings.push(finding);
         matchCount++;
       }
     }

@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Finding } from '../types.js';
 import { loadIgnoreRules } from '../ignoreRules.js';
+import { isLineSuppressed, isTestFixtureFile, asTestFixtureFinding } from '../suppressions.js';
 
 // 25+ patterns for secrets and credentials
 const SECRET_PATTERNS: Array<{ name: string; pattern: RegExp; severity: Finding['severity'] }> = [
@@ -75,6 +76,7 @@ export async function scanSecrets(projectPath: string): Promise<Finding[]> {
     }
     const lines = content.split('\n');
     const relPath = path.relative(projectPath, filePath);
+    const isFixture = isTestFixtureFile(relPath, content);
 
     for (const { name, pattern, severity } of SECRET_PATTERNS) {
       pattern.lastIndex = 0;
@@ -93,6 +95,9 @@ export async function scanSecrets(projectPath: string): Promise<Finding[]> {
         // Skip lines that define a detection pattern or rule property (scanner source files)
         if (/\bpattern\s*:\s*\//.test(lineContent)) continue;
 
+        // Line-level suppression: // nosec
+        if (isLineSuppressed(lineContent)) continue;
+
         // Skip if line contains common placeholder indicators
         const PLACEHOLDER_LINE = /example|placeholder|your[-_]?(?:key|secret|token|api|password)|changeme|todo|insert|replace|fill.?in|enter.?(?:key|secret|token)|sample|fake|dummy|mock|redacted|omit|<[^>]+>/i;
         if (PLACEHOLDER_LINE.test(lineContent)) continue;
@@ -108,7 +113,7 @@ export async function scanSecrets(projectPath: string): Promise<Finding[]> {
         // Ends with common placeholder suffixes
         if (/[-_](here|key|token|secret|value|goes|placeholder|example|xxx+)$/i.test(matchedValue)) continue;
 
-        findings.push({
+        let finding: Finding = {
           module: 'secrets',
           severity,
           title: `${name} detected`,
@@ -116,9 +121,12 @@ export async function scanSecrets(projectPath: string): Promise<Finding[]> {
           file: relPath,
           line: lineNumber,
           remediation: 'Move to environment variables. Never commit secrets to source code.',
-        });
+        };
+        if (isFixture) finding = asTestFixtureFinding(finding);
+
+        findings.push(finding);
         // Limit matches per pattern per file to avoid noise
-        if (findings.filter(f => f.file === relPath && f.title === `${name} detected`).length >= 3) break;
+        if (findings.filter(f => f.file === relPath && f.title.endsWith(`${name} detected`)).length >= 3) break;
       }
     }
   }
