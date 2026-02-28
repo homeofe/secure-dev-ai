@@ -8,7 +8,7 @@ Wire `secure-dev-ai guard` into `aahp-runner` as a pre/post hook so that
 autonomous agent runs are blocked if CRITICAL security findings exist.
 
 **Steps:**
-1. Open `E:\_Development\aahp-runner`
+1. Open `~/Development/aahp-runner`
 2. In `src/agent.ts` (or wherever the run lifecycle is managed), add calls:
    - Before run: `execSync('secure-dev-ai guard --project <name> --pre', { stdio: 'inherit' })`
    - After run: `execSync('secure-dev-ai guard --project <name> --post', { stdio: 'inherit' })`

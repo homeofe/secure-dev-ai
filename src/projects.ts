@@ -14,7 +14,7 @@ export interface ProjectInfo {
 
 function getWorkspaceRoot(): string {
   const config = loadConfig();
-  return config.workspaceRoot || path.join(os.homedir(), '..', '..', '_dev', '_Data', '_Development');
+  return config.workspaceRoot || path.join(os.homedir(), 'Development');
 }
 
 export function discoverProjects(): ProjectInfo[] {
@@ -24,7 +24,7 @@ export function discoverProjects(): ProjectInfo[] {
   // Also try common locations
   const candidates = [
     workspaceRoot,
-    'E:\\_dev\\_Data\\_Development',
+    path.join(os.homedir(), 'Development'),
     process.cwd(),
   ];
 
