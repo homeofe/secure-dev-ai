@@ -1,0 +1,83 @@
+{
+  "aahp_version": "3",
+  "project": "secure-dev-ai",
+  "quick_context": "Security by design CLI for AI-assisted development. Scans projects for secrets, vulnerable deps, insecure code patterns, missing auth, and generates AI threat models. Integrates with aahp-runner as a guard hook.",
+  "last_session": {
+    "phase": "scaffold",
+    "date": "2025-01-01",
+    "summary": "Initial scaffold: all source files created, AAHP handoff initialized."
+  },
+  "next_task_id": 15,
+  "tasks": {
+    "T-001": {
+      "title": "Scaffold repo structure",
+      "status": "done",
+      "priority": "critical"
+    },
+    "T-002": {
+      "title": "CLI skeleton with all commands",
+      "status": "done",
+      "priority": "critical"
+    },
+    "T-003": {
+      "title": "Secrets scanner module",
+      "status": "done",
+      "priority": "critical"
+    },
+    "T-004": {
+      "title": "Dependency scanner module",
+      "status": "done",
+      "priority": "high"
+    },
+    "T-005": {
+      "title": "Code pattern scanner module",
+      "status": "done",
+      "priority": "high"
+    },
+    "T-006": {
+      "title": "Auth coverage checker",
+      "status": "done",
+      "priority": "high"
+    },
+    "T-007": {
+      "title": "AI threat model generator",
+      "status": "done",
+      "priority": "medium"
+    },
+    "T-008": {
+      "title": "Scan orchestrator and scoring",
+      "status": "done",
+      "priority": "critical"
+    },
+    "T-009": {
+      "title": "Report writer and SECURITY.md generator",
+      "status": "done",
+      "priority": "high"
+    },
+    "T-010": {
+      "title": "Guard hook command",
+      "status": "done",
+      "priority": "high"
+    },
+    "T-011": {
+      "title": "aahp-runner integration",
+      "status": "pending",
+      "priority": "medium"
+    },
+    "T-012": {
+      "title": "List command with scores",
+      "status": "done",
+      "priority": "medium"
+    },
+    "T-013": {
+      "title": "Vitest test suite",
+      "status": "done",
+      "priority": "high"
+    },
+    "T-014": {
+      "title": "README and publish config",
+      "status": "done",
+      "priority": "medium"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+# Files and directories to exclude from AI context
+node_modules/
+dist/
+*.log
+.env
+coverage/
+*.map
+package-lock.json
