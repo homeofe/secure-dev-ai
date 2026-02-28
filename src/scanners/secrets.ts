@@ -81,10 +81,23 @@ export async function scanSecrets(projectPath: string): Promise<Finding[]> {
         const lineNumber = upToMatch.split('\n').length;
         const lineContent = lines[lineNumber - 1] || '';
 
-        // Skip if it looks like a .env.example or placeholder
-        if (/example|placeholder|your[-_]?key|changeme|todo|xxxx/i.test(lineContent)) continue;
         // Skip comments
         if (/^\s*(#|\/\/|\/\*)/.test(lineContent)) continue;
+
+        // Skip if line contains common placeholder indicators
+        const PLACEHOLDER_LINE = /example|placeholder|your[-_]?(?:key|secret|token|api|password)|changeme|todo|insert|replace|fill.?in|enter.?(?:key|secret|token)|sample|fake|dummy|mock|redacted|omit|<[^>]+>/i;
+        if (PLACEHOLDER_LINE.test(lineContent)) continue;
+
+        // Skip if the matched value itself looks like a placeholder
+        const matchedValue = match[0];
+        // All-uppercase or contains placeholder words
+        if (/YOUR|EXAMPLE|PLACEHOLDER|CHANGEME|REPLACE|INSERT|FILL|SAMPLE|FAKE|DUMMY|MOCK|REDACTED/i.test(matchedValue)) continue;
+        // Repeating characters (e.g. xxxxxxxx, 00000000, aaaaaaaa)
+        if (/(.)\1{7,}/.test(matchedValue)) continue;
+        // Angle-bracket or curly-brace template tokens like <TOKEN> or {{SECRET}}
+        if (/<[A-Z_]+>|\{\{[^}]+\}\}|\$\{[^}]+\}/.test(matchedValue)) continue;
+        // Ends with common placeholder suffixes
+        if (/[-_](here|key|token|secret|value|goes|placeholder|example|xxx+)$/i.test(matchedValue)) continue;
 
         findings.push({
           module: 'secrets',
