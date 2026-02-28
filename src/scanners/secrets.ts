@@ -113,6 +113,19 @@ export async function scanSecrets(projectPath: string): Promise<Finding[]> {
         // Ends with common placeholder suffixes
         if (/[-_](here|key|token|secret|value|goes|placeholder|example|xxx+)$/i.test(matchedValue)) continue;
 
+        // Downgrade database URLs pointing to localhost/127.x - these are dev credentials only
+        if (name === 'Database URL with credentials' && /(?:@localhost|@127\.\d+\.\d+\.\d+|@0\.0\.0\.0|@::1)/.test(matchedValue)) {
+          const devFinding: Finding = {
+            module: 'secrets', severity: 'LOW',
+            title: `${name} detected (localhost - dev only)`,
+            description: `Local database URL with credentials in ${relPath}:${lineNumber}. Fine for development; ensure production uses env vars.`,
+            file: relPath, line: lineNumber,
+            remediation: 'Use a DATABASE_URL environment variable so production credentials are never in source code.',
+          };
+          findings.push(isFixture ? asTestFixtureFinding(devFinding) : devFinding);
+          continue;
+        }
+
         let finding: Finding = {
           module: 'secrets',
           severity,
