@@ -44,7 +44,7 @@ const TEST_DIRS_RE =
 const TEST_FILE_RE = /\.(?:test|spec|fixture|mock|stub|fake|testdata|test[-_]data)\.[a-z]+$/i
 
 /** Directories whose contents are treated as test code */
-const TEST_DIR_NAMES_RE = /(?:^|\/)__?tests?__?\//i
+const TEST_DIR_NAMES_RE = /(?:^|\/)(?:__?tests?__?|tests?)\//i
 
 /** Pragma patterns accepted in the first 5 lines of a file */
 const PRAGMA_RE =

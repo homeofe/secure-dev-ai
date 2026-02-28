@@ -106,6 +106,8 @@ export async function scanSecrets(projectPath: string): Promise<Finding[]> {
         const matchedValue = match[0];
         // All-uppercase or contains placeholder words
         if (/YOUR|EXAMPLE|PLACEHOLDER|CHANGEME|REPLACE|INSERT|FILL|SAMPLE|FAKE|DUMMY|MOCK|REDACTED/i.test(matchedValue)) continue;
+        // Value contains common test/dev indicator words
+        if (/(?:^|[-_:/"'])(?:test|tests|testing|dev|development|local|dummy|fake|sample|mock|stub|secret|example|demo)(?:[-_:/"']|$)/i.test(matchedValue)) continue;
         // Repeating characters (e.g. xxxxxxxx, 00000000, aaaaaaaa)
         if (/(.)\1{7,}/.test(matchedValue)) continue;
         // Angle-bracket or curly-brace template tokens like <TOKEN> or {{SECRET}}
