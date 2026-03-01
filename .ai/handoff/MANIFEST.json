@@ -1,13 +1,16 @@
 {
   "aahp_version": "3",
   "project": "secure-dev-ai",
-  "quick_context": "Security by design CLI for AI-assisted development. Scans projects for secrets, vulnerable deps, insecure code patterns, missing auth, and generates AI threat models. Integrates with aahp-runner as a guard hook.",
+  "quick_context": "Security by design CLI and library for AI-assisted development. Scans projects for secrets, vulnerable deps, insecure code patterns, missing auth, and generates AI threat models. Provides programmatic runGuard() API and CLI guard command for aahp-runner pre/post hook integration.",
   "last_session": {
     "phase": "scaffold",
-    "date": "2025-01-01",
-    "summary": "Initial scaffold: all source files created, AAHP handoff initialized."
+    "date": "2026-02-28",
+    "summary": "Implemented aahp-runner integration: created programmatic runGuard() API (src/guard.ts), exported types (GuardOptions, GuardResult, AahpRunnerSecurityConfig), added package entry point (src/index.ts), refactored CLI guard command to use shared API, added guard tests, updated README with integration docs.",
+    "agent": "claude-code",
+    "timestamp": "2026-02-28T18:22:22.054Z",
+    "duration_minutes": 2
   },
-  "next_task_id": 15,
+  "next_task_id": 16,
   "tasks": {
     "T-001": {
       "title": "Scaffold repo structure",
@@ -61,7 +64,7 @@
     },
     "T-011": {
       "title": "aahp-runner integration",
-      "status": "pending",
+      "status": "done",
       "priority": "medium"
     },
     "T-012": {
@@ -78,6 +81,17 @@
       "title": "README and publish config",
       "status": "done",
       "priority": "medium"
+    },
+    "T-015": {
+      "title": "T-011: aahp-runner integration",
+      "status": "done",
+      "priority": "medium",
+      "depends_on": [],
+      "created": "2026-02-28T18:15:18.955Z",
+      "notes": "Wire `secure-dev-ai guard` into `aahp-runner` as a pre/post hook.\n\n- Before run: `secure-dev-ai guard --project <name> --pre`\n- After run: `secure-dev-ai guard --project <name> --post`\n- Exit run with code 1 if guard exits 1\n- Make opt-in via config: `secureDevAi: { enabled: true, blockOn: 'CRITICAL' }`\n- `guard` exits 0 if OK, 1 if blocked, 0 if not found (fail-open)\n\n**From AAHP NEXT_ACTIONS**",
+      "github_issue": 1,
+      "github_repo": "homeofe/secure-dev-ai",
+      "completed": "2026-02-28T18:22:22.054Z"
     }
   }
 }
