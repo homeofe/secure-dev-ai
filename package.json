@@ -3,17 +3,27 @@
   "version": "0.1.0",
   "description": "Security by design CLI for AI-assisted development - scans projects and guards autonomous agent runs",
   "license": "MIT",
-  "author": "elvatis",
+  "author": "Elvatis <emre.kohler@elvatis.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/homeofe/secure-dev-ai.git"
   },
-  "keywords": ["security", "aahp", "agent", "ai", "scanner", "devsecops", "cli"],
+  "keywords": [
+    "security",
+    "aahp",
+    "agent",
+    "ai",
+    "scanner",
+    "devsecops",
+    "cli"
+  ],
   "type": "module",
   "bin": {
     "secure-dev-ai": "./dist/cli.js"
   },
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsc -p ./",
     "dev": "node --loader ts-node/esm src/cli.ts",
