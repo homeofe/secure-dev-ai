@@ -2,7 +2,7 @@
   "name": "secure-dev-ai",
   "version": "0.1.0",
   "description": "Security by design CLI for AI-assisted development - scans projects and guards autonomous agent runs",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "Elvatis <emre.kohler@elvatis.com>",
   "repository": {
     "type": "git",
