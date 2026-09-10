@@ -1,5 +1,8 @@
 # secure-dev-ai
 
+> [!NOTE]
+> This repository is archived and no longer actively maintained.
+
 Security by design CLI for AI-assisted development. Scans projects for secrets, vulnerable dependencies, insecure code patterns, and missing authentication coverage. Generates AI-powered STRIDE threat models. Integrates with `aahp-runner` as a guard hook to block autonomous agent runs when critical security issues are detected.
 
 ## Installation
