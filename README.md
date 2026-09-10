@@ -4,14 +4,20 @@ Security by design CLI for AI-assisted development. Scans projects for secrets, 
 
 ## Installation
 
+Install globally directly from GitHub:
+
 ```bash
-npm install -g secure-dev-ai
+npm install -g git+https://github.com/homeofe/secure-dev-ai.git
 ```
 
-Or run without installing:
+Or clone and install locally:
 
 ```bash
-npx secure-dev-ai scan my-project
+git clone https://github.com/homeofe/secure-dev-ai.git
+cd secure-dev-ai
+npm install
+npm run build
+npm link
 ```
 
 ## Quick Start
@@ -221,4 +227,4 @@ Use `--block-on HIGH` to also block on high-severity findings, not just critical
 
 ## License
 
-MIT
+Apache-2.0
