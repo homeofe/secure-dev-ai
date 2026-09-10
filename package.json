@@ -2,7 +2,7 @@
   "name": "secure-dev-ai",
   "version": "0.1.0",
   "description": "Security by design CLI for AI-assisted development - scans projects and guards autonomous agent runs",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "author": "Elvatis <emre.kohler@elvatis.com>",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "secure-dev-ai": "./dist/cli.js"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "build": "tsc -p ./",

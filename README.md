@@ -221,10 +221,10 @@ Use `--block-on HIGH` to also block on high-severity findings, not just critical
 
 ## Requirements
 
-- Node.js 20 or higher
+- Node.js 22 or higher
 - npm (for `deps` scanner)
 - Anthropic API key (optional, for `threat-model` only)
 
 ## License
 
-Apache-2.0
+MIT
